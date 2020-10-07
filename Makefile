@@ -75,6 +75,14 @@ run-fitness-function:
 
 # ---
 
+destroy-environment:
+
+remove-old-artefacts:
+
+remove-old-backups:
+
+# ---
+
 pipeline-send-notification:
 	echo send notification
 

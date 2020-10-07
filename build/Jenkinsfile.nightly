@@ -1,22 +1,24 @@
 pipeline {
-  triggers { pollSCM('H */4 * * 1-5') }
   agent { label "jenkins-slave" }
   options {
-    buildDiscarder(logRotator(daysToKeepStr: "5", numToKeepStr: "13"))
+    buildDiscarder(logRotator(daysToKeepStr: "7", numToKeepStr: "13"))
     disableConcurrentBuilds()
     parallelsAlwaysFailFast()
-    timeout(time: 30, unit: "MINUTES")
+    timeout(time: 120, unit: "MINUTES")
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
-    PROFILE = getProfile()
+    PROFILE = "nightly"
   }
+  triggers { cron(env.BRANCH_NAME == "master" ? "0 1 * * *" : "") }
   stages {
+    stage("Show Configuration") {
+      steps { sh "make show-configuration" }
+    }
     stage("Build") {
       parallel {
         stage("Build: App") {
           steps {
-            sh "make show-configuration"
             sh "make run-static-analisys"
             sh "make run-unit-test"
             sh "make build-artefact"
@@ -30,9 +32,7 @@ pipeline {
     stage("Deploy") {
       parallel {
         stage("Deploy: App") {
-          when { branch "master" /* or tag or specific branch */ }
           steps {
-            sh "make show-configuration"
             sh "make backup-data"
             sh "make provision-infractructure"
             sh "make deploy-artefact"
@@ -45,7 +45,6 @@ pipeline {
     }
     stage("Test") {
       steps {
-        sh "make show-configuration"
         sh "make run-regression-test"
         sh "make run-performance-test"
         sh "make run-security-test"
@@ -53,10 +52,16 @@ pipeline {
       }
     }
     stage("Clean-up") {
-      steps {
-        sh "make destroy-environment"
-        sh "make remove-old-artefacts"
-        sh "make remove-old-backups"
+      parallel {
+        stage("Clean-up: Destroy environment") {
+          steps { sh "make destroy-environment" }
+        }
+        stage("Clean-up: Remove old artefacts") {
+          steps { sh "make remove-old-artefacts" }
+        }
+        stage("Clean-up: Remove old backups") {
+          steps { sh "make remove-old-backups" }
+        }
       }
     }
   }
@@ -64,12 +69,4 @@ pipeline {
     success { sh "make pipeline-on-success" }
     failure { sh "make pipeline-on-failure" }
   }
-}
-
-def getProfile() {
-  // [ is profile set by a prameter ]
-  // [ *-env tag on master => env ]
-  // [ commit on master => dev ]
-  // [ commit on specific branch pattern => branch abbreviation, configuration inherited from dev ]
-  return "dev"
 }
