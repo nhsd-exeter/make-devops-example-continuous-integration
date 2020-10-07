@@ -10,6 +10,14 @@ pipeline {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
   }
   stages {
+    stage("xxx") {
+      parallel {
+        stage("xxx: yyy") {
+          agent { label "jenkins-slave" }
+          sh "make devops-print-variables"
+        }
+      }
+    }
     stage("Build") {
       parallel {
         stage("Build: App") {
@@ -54,84 +62,84 @@ pipeline {
         }
       }
     }
-    stage("Deploy") {
-      parallel {
-        stage("Deploy: App") {
-          agent { label "jenkins-slave" }
-          stages {
-            stage("Show configuration") {
-              steps {
-                script { sh "make devops-print-variables" }
-              }
-            }
-            stage("Backup data") {
-              steps {
-                script { sh "make backup-data" }
-              }
-            }
-            stage("Provision infractructure") {
-              steps {
-                script { sh "make provision-infractructure" }
-              }
-            }
-            stage("Deploy artefact") {
-              steps {
-                script { sh "make deploy-artefact" }
-              }
-            }
-            stage("Apply data changes") {
-              steps {
-                script { sh "make apply-data-changes" }
-              }
-            }
-            stage("Run smoke test") {
-              steps {
-                script { sh "make run-smoke-test" }
-              }
-            }
-            stage("Send notification") {
-              steps {
-                script { sh "make pipeline-send-notification" }
-              }
-            }
-          }
-        }
-      }
-    }
-    stage("Test") {
-      parallel {
-        stage("Test: App") {
-          agent { label "jenkins-slave" }
-          stages {
-            stage("Show configuration") {
-              steps {
-                script { sh "make devops-print-variables" }
-              }
-            }
-            stage("Run regression test") {
-              steps {
-                script { sh "make run-regression-test" }
-              }
-            }
-            stage("Run performance test") {
-              steps {
-                script { sh "make run-performance-test" }
-              }
-            }
-            stage("Run security test") {
-              steps {
-                script { sh "make run-security-test" }
-              }
-            }
-            stage("Run fitness function") {
-              steps {
-                script { sh "make run-fitness-function" }
-              }
-            }
-          }
-        }
-      }
-    }
+    // stage("Deploy") {
+    //   parallel {
+    //     stage("Deploy: App") {
+    //       agent { label "jenkins-slave" }
+    //       stages {
+    //         stage("Show configuration") {
+    //           steps {
+    //             script { sh "make devops-print-variables" }
+    //           }
+    //         }
+    //         stage("Backup data") {
+    //           steps {
+    //             script { sh "make backup-data" }
+    //           }
+    //         }
+    //         stage("Provision infractructure") {
+    //           steps {
+    //             script { sh "make provision-infractructure" }
+    //           }
+    //         }
+    //         stage("Deploy artefact") {
+    //           steps {
+    //             script { sh "make deploy-artefact" }
+    //           }
+    //         }
+    //         stage("Apply data changes") {
+    //           steps {
+    //             script { sh "make apply-data-changes" }
+    //           }
+    //         }
+    //         stage("Run smoke test") {
+    //           steps {
+    //             script { sh "make run-smoke-test" }
+    //           }
+    //         }
+    //         stage("Send notification") {
+    //           steps {
+    //             script { sh "make pipeline-send-notification" }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    // stage("Test") {
+    //   parallel {
+    //     stage("Test: App") {
+    //       agent { label "jenkins-slave" }
+    //       stages {
+    //         stage("Show configuration") {
+    //           steps {
+    //             script { sh "make devops-print-variables" }
+    //           }
+    //         }
+    //         stage("Run regression test") {
+    //           steps {
+    //             script { sh "make run-regression-test" }
+    //           }
+    //         }
+    //         stage("Run performance test") {
+    //           steps {
+    //             script { sh "make run-performance-test" }
+    //           }
+    //         }
+    //         stage("Run security test") {
+    //           steps {
+    //             script { sh "make run-security-test" }
+    //           }
+    //         }
+    //         stage("Run fitness function") {
+    //           steps {
+    //             script { sh "make run-fitness-function" }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
   post {
     success { sh "make pipeline-on-success" }
