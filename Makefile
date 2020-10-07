@@ -39,39 +39,44 @@ create-artefact-repositories: ## Create ECR repositories to store the artefacts
 # ==============================================================================
 # Pipeline targets
 
-build-workflow-run-static-analisys:
-
-build-workflow-run-unit-test:
-
-build-workflow-build-artefact:
+build-artefact:
 	echo make build
 
-build-workflow-prepare-data:
-
-build-workflow-run-integration-test:
-
-build-workflow-run-contract-test:
-
-build-workflow-run-fitness-function:
-
-build-workflow-publish-artefact:
+publish-artefact:
 	echo make push
 
-# ---
+backup-data:
 
-deployment-workflow-backup-data:
+provision-infractructure:
 
-deployment-workflow-provision-infractructure:
+deploy-artefact:
 
-deployment-workflow-deploy-artefact:
-
-deployment-workflow-prepare-data:
-
-deployment-workflow-run-smoke-test:
-
-deployment-workflow-send-notification:
+apply-data-changes:
 
 # ---
+
+run-static-analisys:
+
+run-unit-test:
+
+run-smoke-test:
+
+run-integration-test:
+
+run-contract-test:
+
+run-regression-test:
+
+run-performance-test:
+
+run-security-test:
+
+run-fitness-function:
+
+# ---
+
+pipeline-send-notification:
+	echo send notification
 
 pipeline-on-success:
 	echo success

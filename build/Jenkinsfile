@@ -1,0 +1,148 @@
+pipeline {
+  agent {
+    label "jenkins-slave"
+  }
+  options {
+    buildDiscarder(logRotator(daysToKeepStr: "5", numToKeepStr: "13"))
+    disableConcurrentBuilds()
+    parallelsAlwaysFailFast()
+    timeout(time: 30, unit: "MINUTES")
+  }
+  environment {
+    BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
+  }
+  stages {
+    stage("Build") {
+      parallel {
+        stage("Application") {
+          agent {
+            label "jenkins-slave"
+          }
+          stages {
+            stage("Show configuration") {
+              steps {
+                script { sh "make devops-print-variables" }
+              }
+            }
+            stage("Run static analysis") {
+              steps {
+                script { sh "make run-static-analisys" }
+              }
+            }
+            stage("Run unit test") {
+              steps {
+                script { sh "make run-unit-test" }
+              }
+            }
+            stage("Build artefact") {
+              steps {
+                script { sh "make build-artefact" }
+              }
+            }
+            stage("Run integration test") {
+              steps {
+                script { sh "make run-integration-test" }
+              }
+            }
+            stage("Run contract test") {
+              steps {
+                script { sh "make run-contract-test" }
+              }
+            }
+            stage("Publish artefact") {
+              steps {
+                script { sh "make publish-artefact" }
+              }
+            }
+          }
+        }
+      }
+    }
+    stage("Deploy") {
+      parallel {
+        stage("Application") {
+          agent {
+            label "jenkins-slave"
+          }
+          stages {
+            stage("Show configuration") {
+              steps {
+                script { sh "make devops-print-variables" }
+              }
+            }
+            stage("Backup data") {
+              steps {
+                script { sh "make backup-data" }
+              }
+            }
+            stage("Provision infractructure") {
+              steps {
+                script { sh "make provision-infractructure" }
+              }
+            }
+            stage("Deploy artefact") {
+              steps {
+                script { sh "make deploy-artefact" }
+              }
+            }
+            stage("Apply data changes") {
+              steps {
+                script { sh "make apply-data-changes" }
+              }
+            }
+            stage("Run smoke test") {
+              steps {
+                script { sh "make run-smoke-test" }
+              }
+            }
+            stage("Send notification") {
+              steps {
+                script { sh "make pipeline-send-notification" }
+              }
+            }
+          }
+        }
+      }
+    }
+    stage("Test") {
+      parallel {
+        stage("Application") {
+          agent {
+            label "jenkins-slave"
+          }
+          stages {
+            stage("Show configuration") {
+              steps {
+                script { sh "make devops-print-variables" }
+              }
+            }
+            stage("Run regression test") {
+              steps {
+                script { sh "make run-regression-test" }
+              }
+            }
+            stage("Run performance test") {
+              steps {
+                script { sh "make run-performance-test" }
+              }
+            }
+            stage("Run security test") {
+              steps {
+                script { sh "make run-security-test" }
+              }
+            }
+            stage("Run fitness function") {
+              steps {
+                script { sh "make run-fitness-function" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  post {
+    success { script { sh "make pipeline-on-success" } }
+    failure { script { sh "make pipeline-on-failure" } }
+  }
+}
