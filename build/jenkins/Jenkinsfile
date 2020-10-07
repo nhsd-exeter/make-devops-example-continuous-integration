@@ -1,0 +1,28 @@
+pipeline {
+  // agent {
+  //   label "jenkins-slave"
+  // }
+  options {
+    buildDiscarder(logRotator(daysToKeepStr: "5", numToKeepStr: "13"))
+    disableConcurrentBuilds()
+    parallelsAlwaysFailFast()
+    timeout(time: 30, unit: "MINUTES")
+  }
+  environment {
+    BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
+  }
+  stages {
+    load "Jenkinsfile.build-workflow"
+    def branchName = env.BRANCH_NAME
+    if (branchName == "master") {
+      // deploy to dev
+      load "Jenkinsfile.deploy-workflow"
+    } else if (branchName.startsWith("task/")) {
+      // deploy to hash(task/...)
+    }
+  }
+  post {
+    success { sh "make pipeline-on-success" }
+    failure { sh "make pipeline-on-failure" }
+  }
+}

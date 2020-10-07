@@ -1,0 +1,46 @@
+stage("Deployment Workflow") {
+  parallel {
+    stage("Application") {
+      // agent {
+      //   label "jenkins-slave"
+      // }
+      stages {
+        stage("Show configuration") {
+          steps {
+            script { sh "make devops-print-variables" }
+          }
+        }
+        stage("Backup data") {
+          steps {
+            script { sh "make deployment-workflow-backup-data" }
+          }
+        }
+        stage("Provision infractructure") {
+          steps {
+            script { sh "make deployment-workflow-provision-infractructure" }
+          }
+        }
+        stage("Deploy artefact") {
+          steps {
+            script { sh "make deployment-workflow-deploy-artefact" }
+          }
+        }
+        stage("Prepare data") {
+          steps {
+            script { sh "make deployment-workflow-prepare-data" }
+          }
+        }
+        stage("Smoke test") {
+          steps {
+            script { sh "make deployment-workflow-run-smoke-test" }
+          }
+        }
+        stage("Send notification") {
+          steps {
+            script { sh "make deployment-workflow-send-notification" }
+          }
+        }
+      }
+    }
+  }
+}

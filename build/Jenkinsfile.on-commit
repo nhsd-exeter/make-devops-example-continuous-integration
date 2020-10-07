@@ -3,9 +3,8 @@ pipeline {
     label 'jenkins-slave'
   }
   options {
-    buildDiscarder(logRotator(numToKeepStr: '13'))
+    buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '13'))
     disableConcurrentBuilds()
-    parallelsAlwaysFailFast()
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
@@ -14,8 +13,19 @@ pipeline {
     stage('Show Variables') {
       steps {
         script {
+          sh 'make devops-print-variables'
+        }
+      }
+    }
+    stage('Run Test Suite') {
+      steps {
+        script {
           sh '''
-            make devops-print-variables
+            export AWS_ACCOUNT_ID_LIVE_PARENT=000000000000
+            export AWS_ACCOUNT_ID_MGMT=000000000000
+            export AWS_ACCOUNT_ID_NONPROD=000000000000
+            export AWS_ACCOUNT_ID_PROD=000000000000
+            make devops-test-suite || make devops-test-suite DEBUG=1
           '''
         }
       }
@@ -23,9 +33,7 @@ pipeline {
   }
   post {
     always {
-      sh '''
-        make clean
-      '''
+      sh 'make devops-test-cleanup'
     }
   }
 }

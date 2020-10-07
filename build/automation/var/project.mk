@@ -4,6 +4,6 @@ PROJECT_GROUP_SHORT = uec-tools
 PROJECT_NAME = make-devops-example-continuous-integration
 PROJECT_NAME_SHORT = mdo-ex-ci
 
-ROLE_PREFIX = UECMDO
-SERVICE_TAG = $(PROJECT_GROUP_SHORT)
+ROLE_PREFIX = Texas
+SERVICE_TAG = texas
 PROJECT_TAG = $(PROJECT_NAME)
