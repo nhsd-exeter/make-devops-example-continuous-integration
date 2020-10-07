@@ -18,6 +18,7 @@ pipeline {
     stage("Build") {
       parallel {
         stage("Build: App") {
+          agent { label "jenkins-slave" }
           steps {
             sh "make run-static-analisys"
             sh "make run-unit-test"
@@ -26,13 +27,13 @@ pipeline {
             sh "make run-contract-test"
             sh "make publish-artefact"
           }
-          agent { label "jenkins-slave" }
         }
       }
     }
     stage("Deploy") {
       parallel {
         stage("Deploy: App") {
+          agent { label "jenkins-slave" }
           steps {
             sh "make backup-data"
             sh "make provision-infractructure"
@@ -42,7 +43,6 @@ pipeline {
             sh "make pipeline-send-notification"
           }
         }
-        agent { label "jenkins-slave" }
       }
     }
     stage("Test") {
