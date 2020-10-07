@@ -14,7 +14,7 @@ pipeline {
   stages {
     stage("Call: Build Workflow") {
       steps {
-        build job: 'Jenkins.build-workflow', parameters: [
+        build job: 'build/jenkins/Jenkinsfile.build-workflow', parameters: [
           string(name: 'param1', value: "value1")
         ]
       }
