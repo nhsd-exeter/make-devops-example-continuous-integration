@@ -14,7 +14,9 @@ pipeline {
       parallel {
         stage("xxx: yyy") {
           agent { label "jenkins-slave" }
-          sh "make devops-print-variables"
+          steps {
+            sh "make devops-print-variables"
+          }
         }
       }
     }
