@@ -1,7 +1,4 @@
 pipeline {
-  agent {
-    label "jenkins-slave"
-  }
   options {
     buildDiscarder(logRotator(daysToKeepStr: "5", numToKeepStr: "13"))
     disableConcurrentBuilds()
@@ -14,7 +11,7 @@ pipeline {
   stages {
     stage("Build") {
       parallel {
-        stage("Application") {
+        stage("Build: App") {
           agent {
             label "jenkins-slave"
           }
@@ -60,7 +57,7 @@ pipeline {
     }
     stage("Deploy") {
       parallel {
-        stage("Application") {
+        stage("Deploy: App") {
           agent {
             label "jenkins-slave"
           }
@@ -106,7 +103,7 @@ pipeline {
     }
     stage("Test") {
       parallel {
-        stage("Application") {
+        stage("Test: App") {
           agent {
             label "jenkins-slave"
           }
@@ -142,7 +139,7 @@ pipeline {
     }
   }
   post {
-    success { script { sh "make pipeline-on-success" } }
-    failure { script { sh "make pipeline-on-failure" } }
+    success { sh "make pipeline-on-success" }
+    failure { sh "make pipeline-on-failure" }
   }
 }
