@@ -1,3 +1,60 @@
+stage("Build Workflow") {
+  parallel {
+    stage("Application") {
+      // agent {
+      //   label "jenkins-slave"
+      // }
+      stages {
+        stage("Show configuration") {
+          steps {
+            script { sh "make devops-print-variables" }
+          }
+        }
+        stage("Run static analysis") {
+          steps {
+            script { sh "make build-workflow-run-static-analisys" }
+          }
+        }
+        stage("Run unit test") {
+          steps {
+            script { sh "make build-workflow-run-unit-test" }
+          }
+        }
+        stage("Build artefact") {
+          steps {
+            script { sh "make build-workflow-build-artefact" }
+          }
+        }
+        stage("Prepare data") {
+          steps {
+            script { sh "make build-workflow-prepare-data" }
+          }
+        }
+        stage("Run integration test") {
+          steps {
+            script { sh "make build-workflow-run-integration-test" }
+          }
+        }
+        stage("Run contract test") {
+          steps {
+            script { sh "make build-workflow-run-contract-test" }
+          }
+        }
+        stage("Run fitness function") {
+          steps {
+            script { sh "make build-workflow-run-fitness-function" }
+          }
+        }
+        stage("Publish artefact") {
+          steps {
+            script { sh "make build-workflow-publish-artefact" }
+          }
+        }
+      }
+    }
+  }
+}
+
 stage("Deployment Workflow") {
   parallel {
     stage("Application") {
