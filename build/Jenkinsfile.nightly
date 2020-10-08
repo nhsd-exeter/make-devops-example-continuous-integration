@@ -1,6 +1,7 @@
 pipeline {
   agent { label "jenkins-slave" }
   options {
+    setDescription()
     buildDiscarder(logRotator(daysToKeepStr: "7", numToKeepStr: "13"))
     disableConcurrentBuilds()
     parallelsAlwaysFailFast()
@@ -73,9 +74,9 @@ pipeline {
   }
 }
 
+@NonCPS
 def setDescription() {
     def item = Jenkins.instance.getItemByFullName(env.JOB)
     item.setDescription("This is a description of the pipeline.")
     item.save()
 }
-setDescription()
