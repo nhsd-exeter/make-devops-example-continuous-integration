@@ -72,3 +72,10 @@ pipeline {
     failure { sh "make pipeline-on-failure" }
   }
 }
+
+def setDescription() {
+    def item = Jenkins.instance.getItemByFullName(env.JOB)
+    item.setDescription("This is a description of the pipeline.")
+    item.save()
+}
+setDescription()
