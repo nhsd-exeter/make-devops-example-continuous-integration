@@ -73,6 +73,7 @@ pipeline {
   }
 }
 
+@NonCPS
 def setDescription() {
     def item = Jenkins.instance.getItemByFullName(env.JOB)
     item.setDescription("This is a description of the pipeline.")
