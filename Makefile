@@ -65,17 +65,15 @@ run-integration-test:
 
 run-contract-test:
 
-run-regression-test:
+run-functional-test:
 
 run-performance-test:
 
 run-security-test:
 
-run-fitness-function:
-
 # ---
 
-destroy-environment:
+remove-unused-environments:
 
 remove-old-artefacts:
 
@@ -84,13 +82,13 @@ remove-old-backups:
 # ---
 
 pipeline-send-notification:
-	echo send notification
+	echo $(@)
 
 pipeline-on-success:
-	echo success
+	echo $(@)
 
 pipeline-on-failure:
-	echo failure
+	echo $(@)
 
 # ==============================================================================
 

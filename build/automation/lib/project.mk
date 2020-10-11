@@ -98,10 +98,33 @@ project-create-pipeline: ### Create pipeline
 
 # ==============================================================================
 
+project-get-env-name:
+	if [[ $$BUILD_BRANCH =~ ^task/[A-Z]{2,5}-[0-9]{1,5}_[A-Za-z0-9_]{4,32} ]]; then
+		echo $$BUILD_BRANCH | grep -Eo '^task/[A-Z]{2,5}-[0-9]{1,5}' | grep -Eo '[A-Z]{2,5}-[0-9]{1,5}'
+		exit 0
+	fi
+	[ $$BUILD_BRANCH == master ] && echo dev && exit 0
+	:
+
+project-is-branch-deployable:
+	[ $$BUILD_BRANCH == master ] && echo true && exit 0
+	[[ $$BUILD_BRANCH =~ ^task/[A-Z]{2,5}-[0-9]{1,5}_[A-Za-z0-9_]{4,32}/ ]] && [[ $$BUILD_BRANCH =~ /env$$ ]] && echo true && exit 0
+	echo false
+
+project-is-branch-testable:
+	[ $$BUILD_BRANCH == master ] && echo true && exit 0
+	[[ $$BUILD_BRANCH =~ ^task/[A-Z]{2,5}-[0-9]{1,5}_[A-Za-z0-9_]{4,32}/ ]] && [[ $$BUILD_BRANCH =~ /(test|test-func|test-perf|test-sec)$$ ]] && echo true && exit 0
+	echo false
+
+# ==============================================================================
+
 .SILENT: \
 	project-create-contract-test \
 	project-create-deployment \
 	project-create-image \
 	project-create-infrastructure \
 	project-create-pipeline \
-	project-create-profile
+	project-create-profile \
+	project-get-env-name \
+	project-is-branch-deployable \
+	project-is-branch-testable
