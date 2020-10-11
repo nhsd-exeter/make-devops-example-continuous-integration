@@ -19,7 +19,6 @@ pipeline {
       steps { sh "make show-configuration" }
     }
     stage("Clean up") {
-      agent { label "jenkins-slave" }
       parallel {
         stage("Clean up: Remove unused environments") {
           steps { sh "make remove-unused-environments" }
