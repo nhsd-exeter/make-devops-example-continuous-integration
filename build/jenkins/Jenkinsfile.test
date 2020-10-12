@@ -7,12 +7,13 @@ pipeline {
     buildDiscarder(logRotator(daysToKeepStr: "7", numToKeepStr: "13"))
     disableConcurrentBuilds()
     parallelsAlwaysFailFast()
-    timeout(time: 30, unit: "MINUTES")
+    timeout(time: 60, unit: "MINUTES")
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
-    PROFILE = getProfile()
+    PROFILE = "test"
   }
+  triggers { cron(env.BRANCH_NAME == "master" ? "0 4 * * *" : "") }
   stages {
     stage("Show Configuration") {
       steps { sh "make show-configuration" }
@@ -33,10 +34,6 @@ pipeline {
       }
     }
     stage("Deploy") {
-      when {
-        beforeAgent true
-        expression { sh(returnStdout: true, script: "make project-is-branch-deployable").trim() == "true" }
-      }
       parallel {
         stage("Deploy: App") {
           agent { label "jenkins-slave" }
@@ -50,10 +47,6 @@ pipeline {
       }
     }
     stage("Test") {
-      when {
-        beforeAgent true
-        expression { sh(returnStdout: true, script: "make project-is-branch-testable").trim() == "true" }
-      }
       agent { label "jenkins-slave" }
       steps {
         sh "make run-functional-test"
@@ -66,8 +59,4 @@ pipeline {
     success { sh "make pipeline-on-success" }
     failure { sh "make pipeline-on-failure" }
   }
-}
-
-def getProfile() {
-  return "dev"
 }

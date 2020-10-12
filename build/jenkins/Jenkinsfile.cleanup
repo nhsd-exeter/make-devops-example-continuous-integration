@@ -11,7 +11,7 @@ pipeline {
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
-    PROFILE = getProfile()
+    PROFILE = "dev"
   }
   triggers { cron(env.BRANCH_NAME == "master" ? "0 20 * * *" : "") }
   stages {
@@ -36,8 +36,4 @@ pipeline {
     success { sh "make pipeline-on-success" }
     failure { sh "make pipeline-on-failure" }
   }
-}
-
-def getProfile() {
-  return "remote"
 }

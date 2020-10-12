@@ -11,8 +11,10 @@ pipeline {
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
-    PROFILE = getProfile()
+    //GIT_TAG = sh(returnStdout: true, script: "git get current ref ...").trim()
+    //PROFILE = [get it from the GIT_TAG ...]
   }
+  triggers { pollSCM("* * * * *") }
   stages {
     stage("Show Configuration") {
       steps { sh "make show-configuration" }
@@ -37,8 +39,4 @@ pipeline {
     success { sh "make pipeline-on-success" }
     failure { sh "make pipeline-on-failure" }
   }
-}
-
-def getProfile() {
-  return "demo" // TODO: Get environment name from git tag
 }
