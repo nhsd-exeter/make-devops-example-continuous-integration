@@ -10,25 +10,25 @@ pipeline {
     timeout(time: 30, unit: "MINUTES")
   }
   environment {
-    BUILD_DATE = bash(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
+    BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
     PROFILE = "dev"
   }
   triggers { pollSCM("* * * * *") }
   stages {
     stage("Show Configuration") {
-      steps { bash "make show-configuration" }
+      steps { sh "make show-configuration" }
     }
     stage("Build") {
       parallel {
         stage("Build: App") {
           agent { label "jenkins-slave" }
           steps {
-            bash "make run-static-analisys"
-            bash "make run-unit-test"
-            bash "make build-artefact"
-            bash "make run-integration-test"
-            bash "make run-contract-test"
-            bash "make publish-artefact"
+            sh "make run-static-analisys"
+            sh "make run-unit-test"
+            sh "make build-artefact"
+            sh "make run-integration-test"
+            sh "make run-contract-test"
+            sh "make publish-artefact"
           }
         }
       }
@@ -36,16 +36,16 @@ pipeline {
     stage("Deploy") {
       when {
         beforeAgent true
-        expression { bash(returnStdout: true, script: "make project-is-development-branch-deployable").trim() == "true" }
+        expression { sh(returnStdout: true, script: "make project-is-development-branch-deployable").trim() == "true" }
       }
       parallel {
         stage("Deploy: App") {
           agent { label "jenkins-slave" }
           steps {
-            bash "make provision-infractructure"
-            bash "make deploy-artefact"
-            bash "make apply-data-changes"
-            bash "make run-smoke-test"
+            sh "make provision-infractructure"
+            sh "make deploy-artefact"
+            sh "make apply-data-changes"
+            sh "make run-smoke-test"
           }
         }
       }
@@ -53,18 +53,18 @@ pipeline {
     stage("Test") {
       when {
         beforeAgent true
-        expression { bash(returnStdout: true, script: "make project-is-development-branch-testable").trim() == "true" }
+        expression { sh(returnStdout: true, script: "make project-is-development-branch-testable").trim() == "true" }
       }
       agent { label "jenkins-slave" }
       steps {
-        bash "make run-functional-test"
-        bash "make run-performance-test"
-        bash "make run-security-test"
+        sh "make run-functional-test"
+        sh "make run-performance-test"
+        sh "make run-security-test"
       }
     }
   }
   post {
-    success { bash "make pipeline-on-success" }
-    failure { bash "make pipeline-on-failure" }
+    success { sh "make pipeline-on-success" }
+    failure { sh "make pipeline-on-failure" }
   }
 }
