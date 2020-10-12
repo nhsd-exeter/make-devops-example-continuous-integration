@@ -11,7 +11,7 @@ pipeline {
   }
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
-    //PROFILE = "dev"
+    PROFILE = "dev"
   }
   triggers { pollSCM("* * * * *") }
   stages {
