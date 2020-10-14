@@ -40,55 +40,73 @@ create-artefact-repositories: ## Create ECR repositories to store the artefacts
 # Pipeline targets
 
 build-artefact:
-	echo make build
+	echo TODO: $(@)
 
 publish-artefact:
-	echo make push
+	echo TODO: $(@)
 
 backup-data:
+	echo TODO: $(@)
 
 provision-infractructure:
+	echo TODO: $(@)
 
 deploy-artefact:
+	echo TODO: $(@)
 
 apply-data-changes:
+	echo TODO: $(@)
 
-# ---
+# --------------------------------------
 
 run-static-analisys:
+	echo TODO: $(@)
 
 run-unit-test:
+	echo TODO: $(@)
 
 run-smoke-test:
+	echo TODO: $(@)
 
 run-integration-test:
+	echo TODO: $(@)
 
 run-contract-test:
+	echo TODO: $(@)
 
 run-functional-test:
+	[ $$(make project-branch-func-test) != true ] && exit 0
+	echo TODO: $(@)
 
 run-performance-test:
+	[ $$(make project-branch-perf-test) != true ] && exit 0
+	echo TODO: $(@)
 
 run-security-test:
+	[ $$(make project-branch-func-test) != true ] && exit 0
+	echo TODO: $(@)
 
-# ---
+# --------------------------------------
 
 remove-unused-environments:
+	echo TODO: $(@)
 
 remove-old-artefacts:
+	echo TODO: $(@)
 
 remove-old-backups:
+	echo TODO: $(@)
 
-# ---
+# --------------------------------------
 
 pipeline-send-notification:
-	echo $(@)
+	echo TODO: $(@)
 
 pipeline-on-success:
-	echo $(@)
+	echo TODO: $(@)
 
 pipeline-on-failure:
-	echo $(@)
+	echo TODO: $(@)
 
 # ==============================================================================
 
