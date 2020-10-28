@@ -16,8 +16,11 @@ pipeline {
   }
   triggers { pollSCM("* * * * *") }
   stages {
-    stage("Show Configuration") {
-      steps { sh "make show-configuration" }
+    stage("Configuration") {
+      steps {
+        sh "make show-configuration"
+        sh "make pipeline-check-resources"
+      }
     }
     stage("Deploy") {
       parallel {
@@ -29,14 +32,12 @@ pipeline {
             sh "make deploy-artefact"
             sh "make apply-data-changes"
             sh "make run-smoke-test"
-            sh "make pipeline-send-notification"
           }
         }
       }
     }
   }
   post {
-    success { sh "make pipeline-on-success" }
-    failure { sh "make pipeline-on-failure" }
+    always { sh "make pipeline-finalise PIPELINE_NAME='PROJECT_DISPLAY_NAME_TO_REPLACE (Production)' BUILD_STATUS=${currentBuild.currentResult}" }
   }
 }

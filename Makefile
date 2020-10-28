@@ -11,6 +11,8 @@ start: project-start # Start project
 
 stop: project-stop # Stop project
 
+restart: stop start # Restart project
+
 log: project-log # Show project logs
 
 test: # Test project
@@ -99,14 +101,32 @@ remove-old-backups:
 
 # --------------------------------------
 
-pipeline-send-notification:
-	echo TODO: $(@)
+pipeline-finalise: ## Finalise pipeline execution - mandatory: PIPELINE_NAME,BUILD_STATUS
+	# Check if BUILD_STATUS is SUCCESS or FAILURE
+	make pipeline-send-notification
 
-pipeline-on-success:
-	echo TODO: $(@)
+pipeline-send-notification: ## Send Slack notification with the pipeline status - mandatory: PIPELINE_NAME,BUILD_STATUS
+	eval "$$(make aws-assume-role-export-variables)"
+	eval "$$(make secret-fetch-and-export-variables NAME=$(PROJECT_GROUP_SHORT)-mdo-$(PROFILE)/deployment)"
+	make slack-it
 
-pipeline-on-failure:
-	echo TODO: $(@)
+# --------------------------------------
+
+pipeline-check-resources: ## Check all the pipeline deployment supporting resources - optional: PROFILE=[name]
+	profiles="$$(make project-list-profiles)"
+	# table: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-deployment
+	# secret: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)/deployment
+	# bucket: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)-deployment
+	# certificate: SSL_DOMAINS_PROD
+	# repos: DOCKER_REPOSITORIES
+
+pipeline-create-resources: ## Create all the pipeline deployment supporting resources - optional: PROFILE=[name]
+	profiles="$$(make project-list-profiles)"
+	#make aws-dynamodb-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-deployment ATTRIBUTE_DEFINITIONS= KEY_SCHEMA=
+	#make secret-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)/deployment VARS=DB_PASSWORD,SMTP_PASSWORD,SLACK_WEBHOOK_URL
+	#make aws-s3-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)-deployment
+	#make ssl-request-certificate-prod SSL_DOMAINS_PROD
+	#make docker-create-repository NAME=NAME_TEMPLATE_TO_REPLACE
 
 # ==============================================================================
 

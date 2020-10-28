@@ -15,8 +15,11 @@ pipeline {
   }
   triggers { cron(env.BRANCH_NAME == "master" ? "0 20 * * *" : "") }
   stages {
-    stage("Show Configuration") {
-      steps { sh "make show-configuration" }
+    stage("Configuration") {
+      steps {
+        sh "make show-configuration"
+        sh "make pipeline-check-resources"
+      }
     }
     stage("Clean up") {
       parallel {
@@ -33,7 +36,6 @@ pipeline {
     }
   }
   post {
-    success { sh "make pipeline-on-success" }
-    failure { sh "make pipeline-on-failure" }
+    always { sh "make pipeline-finalise PIPELINE_NAME='Make DevOps, Example: Continuous Integration (Cleanup)' BUILD_STATUS=${currentBuild.currentResult}" }
   }
 }
