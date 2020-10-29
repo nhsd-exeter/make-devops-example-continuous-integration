@@ -107,26 +107,20 @@ pipeline-finalise: ## Finalise pipeline execution - mandatory: PIPELINE_NAME,BU
 
 pipeline-send-notification: ## Send Slack notification with the pipeline status - mandatory: PIPELINE_NAME,BUILD_STATUS
 	eval "$$(make aws-assume-role-export-variables)"
-	eval "$$(make secret-fetch-and-export-variables NAME=$(PROJECT_GROUP_SHORT)-mdo-$(PROFILE)/deployment)"
+	eval "$$(make secret-fetch-and-export-variables NAME=$(PROJECT_GROUP_SHORT)-mdo-dev/deployment)"
 	make slack-it
 
 # --------------------------------------
 
 pipeline-check-resources: ## Check all the pipeline deployment supporting resources - optional: PROFILE=[name]
-	profiles="$$(make project-list-profiles)"
-	# table: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-deployment
-	# secret: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)/deployment
-	# bucket: $(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)-deployment
-	# certificate: SSL_DOMAINS_PROD
-	# repos: DOCKER_REPOSITORIES
+	# TODO:
 
 pipeline-create-resources: ## Create all the pipeline deployment supporting resources - optional: PROFILE=[name]
-	profiles="$$(make project-list-profiles)"
-	#make aws-dynamodb-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-deployment ATTRIBUTE_DEFINITIONS= KEY_SCHEMA=
-	#make secret-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)/deployment VARS=DB_PASSWORD,SMTP_PASSWORD,SLACK_WEBHOOK_URL
-	#make aws-s3-create NAME=$(PROJECT_GROUP_SHORT)-$(PROJECT_NAME_SHORT)-$(PROFILE)-deployment
-	#make ssl-request-certificate-prod SSL_DOMAINS_PROD
-	#make docker-create-repository NAME=NAME_TEMPLATE_TO_REPLACE
+	# TODO:
+	# make docker-create-repository NAME=app
+	# make secret-create PROFILE=dev \
+	# 	NAME=$(PROJECT_GROUP_SHORT)-mdo-dev/deployment \
+	# 	VARS=SLACK_WEBHOOK_URL
 
 # ==============================================================================
 
