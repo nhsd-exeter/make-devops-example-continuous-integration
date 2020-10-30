@@ -12,7 +12,7 @@ pipeline {
   environment {
     BUILD_DATE = sh(returnStdout: true, script: "date -u +'%Y-%m-%dT%H:%M:%S%z'").trim()
     //GIT_TAG = sh(returnStdout: true, script: "git get current ref ...").trim()
-    //PROFILE = [get it from the GIT_TAG ...]
+    //PROFILE = [get it from the GIT_TAG ... testing]
   }
   triggers { cron(env.BRANCH_NAME == "master" ? "* * * * *" : "") }
   stages {
